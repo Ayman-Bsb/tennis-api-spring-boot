@@ -1,6 +1,7 @@
 package com.ayman.tennis.web;
 
 import com.ayman.tennis.Player;
+import com.ayman.tennis.PlayerList;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,7 +12,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.websocket.server.PathParam;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 @Tag(name = "Tennis Players API")
@@ -27,7 +27,7 @@ public class PlayerController {
     })
     @GetMapping
     public List<Player> list(){
-        return Collections.emptyList();
+        return PlayerList.All;
     }
 
     @Operation(summary = "Finds a player", description = "Finds a player")
@@ -38,7 +38,10 @@ public class PlayerController {
     })
     @GetMapping("{lastName}")
     public Player getByLastName(@PathVariable("lastName") String lastName){
-        return null;
+        return PlayerList.All.stream()
+                .filter(player -> player.lastName().equals(lastName))
+                .findFirst()
+                .orElse(null);
     }
 
     @Operation(summary = "Creates a player", description = "Creates a player")
