@@ -1,7 +1,7 @@
 package com.ayman.tennis.web;
 
+import com.ayman.tennis.Error;
 import com.ayman.tennis.Player;
-import com.ayman.tennis.PlayerList;
 import com.ayman.tennis.service.PlayerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -39,14 +39,14 @@ public class PlayerController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Player",
                     content = {@Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Player.class)))})
+                            schema = @Schema(implementation = Player.class))}),
+            @ApiResponse(responseCode = "404", description = "Player with specified last name was not found.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Error.class))}),
     })
     @GetMapping("{lastName}")
     public Player getByLastName(@PathVariable("lastName") String lastName){
-        return PlayerList.All.stream()
-                .filter(player -> player.lastName().equals(lastName))
-                .findFirst()
-                .orElseThrow();
+        return playerService.getByLastName(lastName);
     }
 
     @Operation(summary = "Creates a player", description = "Creates a player")
