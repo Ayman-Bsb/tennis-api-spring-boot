@@ -2,6 +2,7 @@ package com.ayman.tennis.web;
 
 import com.ayman.tennis.Error;
 import com.ayman.tennis.Player;
+import com.ayman.tennis.PlayerToRegister;
 import com.ayman.tennis.service.PlayerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -53,11 +54,11 @@ public class PlayerController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created player",
                     content = {@Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Player.class)))})
+                            array = @ArraySchema(schema = @Schema(implementation = PlayerToRegister.class)))})
     })
     @PostMapping
-    public Player createPlayer(@RequestBody @Valid Player player){
-        return player;
+    public Player createPlayer(@RequestBody @Valid PlayerToRegister playerToRegister){
+        return playerService.create(playerToRegister);
     }
 
     @Operation(summary = "Updates a player", description = "Updates a player")
