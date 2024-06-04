@@ -3,6 +3,9 @@ package com.ayman.tennis.service;
 import com.ayman.tennis.Player;
 import com.ayman.tennis.PlayerList;
 import com.ayman.tennis.PlayerToSave;
+import com.ayman.tennis.Rank;
+import com.ayman.tennis.data.PlayerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -12,8 +15,18 @@ import java.util.stream.Collectors;
 @Service
 public class PlayerService {
 
+    @Autowired
+    private PlayerRepository playerRepository;
+
     public List<Player> getAllPlayers(){
-        return PlayerList.All.stream()
+        return playerRepository.findAll().stream()
+                // Transform the PlayerEntity to Player, as this is what is expected at the business layer
+                .map(player -> new Player(
+                        player.getFirstName(),
+                        player.getLastName(),
+                        player.getBirthDate(),
+                        new Rank(player.getPosition(), player.getPoints())
+                ))
                 .sorted(Comparator.comparing(player -> player.rank().position()))
                 .collect(Collectors.toList());
     }
