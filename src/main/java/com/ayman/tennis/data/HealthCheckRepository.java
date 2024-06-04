@@ -1,4 +1,4 @@
-package com.ayman.tennis.repository;
+package com.ayman.tennis.data;
 
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
