@@ -4,12 +4,14 @@ import com.ayman.tennis.Player;
 import com.ayman.tennis.PlayerList;
 import com.ayman.tennis.PlayerToSave;
 import com.ayman.tennis.Rank;
+import com.ayman.tennis.data.PlayerEntity;
 import com.ayman.tennis.data.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,10 +34,20 @@ public class PlayerService {
     }
 
     public Player getByLastName(String lastName){
-        return PlayerList.All.stream()
-                .filter(player -> player.lastName().equals(lastName))
-                .findFirst()
-                .orElseThrow(() -> new PlayerNotFoundException(lastName));
+        Optional<PlayerEntity> optionalPlayerEntity = playerRepository.findOneByLastNameIgnoreCase(lastName);
+
+        if(optionalPlayerEntity.isEmpty()){
+            throw new PlayerNotFoundException(lastName);
+        }
+
+        PlayerEntity playerEntity = optionalPlayerEntity.get();
+
+        return new Player(
+                playerEntity.getFirstName(),
+                playerEntity.getLastName(),
+                playerEntity.getBirthDate(),
+                new Rank(playerEntity.getPosition(), playerEntity.getPoints())
+        );
     }
 
     public Player create(PlayerToSave playerToSave){
