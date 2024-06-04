@@ -22,21 +22,21 @@ public class PlayerEntity {
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
+    @Column(name = "position", nullable = false)
+    private Integer position;
+
     @Column(name = "points", nullable = false)
     private Integer points;
-
-    @Column(name = "rank", nullable = false)
-    private Integer rank;
 
     public PlayerEntity() {
     }
 
-    public PlayerEntity(String lastName, String firstName, LocalDate birthDate, Integer points, Integer rank) {
+    public PlayerEntity(String lastName, String firstName, LocalDate birthDate, Integer position, Integer points) {
         this.lastName = lastName;
         this.firstName = firstName;
         this.birthDate = birthDate;
+        this.position = position;
         this.points = points;
-        this.rank = rank;
     }
 
     public String getLastName() {
@@ -71,11 +71,11 @@ public class PlayerEntity {
         this.points = points;
     }
 
-    public Integer getRank() {
-        return rank;
+    public Integer getPosition() {
+        return position;
     }
 
-    public void setRank(Integer rank) {
-        this.rank = rank;
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 }
