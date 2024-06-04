@@ -2,7 +2,7 @@ package com.ayman.tennis.service;
 
 import com.ayman.tennis.Player;
 import com.ayman.tennis.PlayerList;
-import com.ayman.tennis.PlayerToRegister;
+import com.ayman.tennis.PlayerToSave;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -25,12 +25,27 @@ public class PlayerService {
                 .orElseThrow(() -> new PlayerNotFoundException(lastName));
     }
 
-    public Player create(PlayerToRegister playerToRegister){
-        RankingCalculator rankingCalculator = new RankingCalculator(PlayerList.All, playerToRegister);
+    public Player create(PlayerToSave playerToSave){
+        return getPlayerNewRanking(PlayerList.All,playerToSave);
+    }
+
+    public Player update(PlayerToSave playerToSave) {
+        getByLastName(playerToSave.lastName());
+
+        List<Player> playersWithoutPlayerToUpdate = PlayerList.All.stream()
+                .filter(player -> !player.lastName().equals(playerToSave.lastName()))
+                .toList();
+
+        return getPlayerNewRanking(playersWithoutPlayerToUpdate, playerToSave);
+    }
+
+    private Player getPlayerNewRanking(List<Player> existingPlayers, PlayerToSave playerToSave) {
+        RankingCalculator rankingCalculator = new RankingCalculator(existingPlayers, playerToSave);
         List<Player> players = rankingCalculator.getNewPlayersRanking();
 
         return players.stream()
-                .filter(player -> player.lastName().equals(playerToRegister.lastName()))
+                .filter(player -> player.lastName().equals(playerToSave.lastName()))
                 .findFirst().get();
     }
+
 }

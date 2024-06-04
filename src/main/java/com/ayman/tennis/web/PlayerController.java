@@ -2,7 +2,7 @@ package com.ayman.tennis.web;
 
 import com.ayman.tennis.Error;
 import com.ayman.tennis.Player;
-import com.ayman.tennis.PlayerToRegister;
+import com.ayman.tennis.PlayerToSave;
 import com.ayman.tennis.service.PlayerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -54,22 +54,25 @@ public class PlayerController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created player",
                     content = {@Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = PlayerToRegister.class)))})
+                            schema = @Schema(implementation = PlayerToSave.class))})
     })
     @PostMapping
-    public Player createPlayer(@RequestBody @Valid PlayerToRegister playerToRegister){
-        return playerService.create(playerToRegister);
+    public Player createPlayer(@RequestBody @Valid PlayerToSave playerToSave){
+        return playerService.create(playerToSave);
     }
 
     @Operation(summary = "Updates a player", description = "Updates a player")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Updated player",
                     content = {@Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Player.class)))})
+                            schema = @Schema(implementation = Player.class))}),
+            @ApiResponse(responseCode = "404", description = "Player with specified last name was not found.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Error.class))})
     })
     @PutMapping
-    public Player updatePlayer(@RequestBody @Valid Player player){
-        return player;
+    public Player updatePlayer(@RequestBody @Valid PlayerToSave playerToSave){
+        return playerService.update(playerToSave);
     }
 
     @Operation(summary = "Deletes a player", description = "Deletes a player")
