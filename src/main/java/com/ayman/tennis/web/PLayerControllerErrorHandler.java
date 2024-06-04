@@ -1,5 +1,7 @@
 package com.ayman.tennis.web;
 
+import com.ayman.tennis.Error;
+import com.ayman.tennis.service.PlayerNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,16 +11,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class PLayerControllerErrorHandler {
 
-    @ExceptionHandler(NoSuchElementException.class)
+    @ExceptionHandler(PlayerNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    private void handleNoElementException(){}
+    private Error handlePlayerNotFoundException(PlayerNotFoundException ex){
+        return new Error(ex.getMessage());
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     private Map<String, String> handleValidationException(MethodArgumentNotValidException ex){
         var errors = new HashMap<String, String>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
