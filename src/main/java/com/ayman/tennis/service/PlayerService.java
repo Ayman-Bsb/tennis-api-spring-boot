@@ -98,23 +98,16 @@ public class PlayerService {
     }
 
     public void delete(String lastName) {
-//        getByLastName(lastName);
-//
-//        PlayerList.All = PlayerList.All.stream()
-//                .filter(player -> !player.lastName().equals(lastName))
-//                .toList();
-//
-//        RankingCalculator rankingCalculator = new RankingCalculator(PlayerList.All);
-//        rankingCalculator.getNewPlayersRanking();
-    }
+        Optional<PlayerEntity> playerToDelete = playerRepository.findOneByLastNameIgnoreCase(lastName);
 
-//    private Player getPlayerNewRanking(List<Player> existingPlayers, PlayerToSave playerToSave) {
-//        RankingCalculator rankingCalculator = new RankingCalculator(existingPlayers, playerToSave);
-//        List<Player> players = rankingCalculator.getNewPlayersRanking();
-//
-//        return players.stream()
-//                .filter(player -> player.lastName().equals(playerToSave.lastName()))
-//                .findFirst().get();
-//    }
+        if(playerToDelete.isEmpty()){
+            throw new PlayerNotFoundException(lastName);
+        }
+
+        playerRepository.delete(playerToDelete.get());
+
+        List<PlayerEntity> newRanking = new RankingCalculator(playerRepository.findAll()).getNewPlayersRanking();
+        playerRepository.saveAll(newRanking);
+    }
 
 }
