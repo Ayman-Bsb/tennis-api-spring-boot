@@ -19,6 +19,10 @@ public class PlayerService {
     @Autowired
     private PlayerRepository playerRepository;
 
+    public PlayerService(PlayerRepository playerRepository) {
+        this.playerRepository = playerRepository;
+    }
+
     public List<Player> getAllPlayers(){
         return playerRepository.findAll().stream()
                 // Transform the PlayerEntity to Player, as this is what is expected at the business layer
