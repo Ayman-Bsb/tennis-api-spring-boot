@@ -1,6 +1,6 @@
 package com.ayman.tennis;
 
-import com.ayman.tennis.repository.HealthCheckRepository;
+import com.ayman.tennis.data.HealthCheckRepository;
 import com.ayman.tennis.service.HealthCheckService;
 import com.ayman.tennis.web.HealthCheckController;
 import org.assertj.core.api.Assertions;

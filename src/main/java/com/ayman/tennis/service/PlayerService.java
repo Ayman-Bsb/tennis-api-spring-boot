@@ -1,62 +1,113 @@
 package com.ayman.tennis.service;
 
 import com.ayman.tennis.Player;
-import com.ayman.tennis.PlayerList;
 import com.ayman.tennis.PlayerToSave;
+import com.ayman.tennis.Rank;
+import com.ayman.tennis.data.PlayerEntity;
+import com.ayman.tennis.data.PlayerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class PlayerService {
 
+    @Autowired
+    private PlayerRepository playerRepository;
+
     public List<Player> getAllPlayers(){
-        return PlayerList.All.stream()
+        return playerRepository.findAll().stream()
+                // Transform the PlayerEntity to Player, as this is what is expected at the business layer
+                .map(player -> new Player(
+                        player.getFirstName(),
+                        player.getLastName(),
+                        player.getBirthDate(),
+                        new Rank(player.getPosition(), player.getPoints())
+                ))
                 .sorted(Comparator.comparing(player -> player.rank().position()))
                 .collect(Collectors.toList());
     }
 
     public Player getByLastName(String lastName){
-        return PlayerList.All.stream()
-                .filter(player -> player.lastName().equals(lastName))
-                .findFirst()
-                .orElseThrow(() -> new PlayerNotFoundException(lastName));
+        Optional<PlayerEntity> optionalPlayerEntity = playerRepository.findOneByLastNameIgnoreCase(lastName);
+
+        if(optionalPlayerEntity.isEmpty()){
+            throw new PlayerNotFoundException(lastName);
+        }
+
+        PlayerEntity playerEntity = optionalPlayerEntity.get();
+
+        return new Player(
+                playerEntity.getFirstName(),
+                playerEntity.getLastName(),
+                playerEntity.getBirthDate(),
+                new Rank(playerEntity.getPosition(), playerEntity.getPoints())
+        );
     }
 
     public Player create(PlayerToSave playerToSave){
-        return getPlayerNewRanking(PlayerList.All,playerToSave);
+        Optional<PlayerEntity> optionalPlayerEntity = playerRepository.findOneByLastNameIgnoreCase(playerToSave.lastName());
+
+        if(optionalPlayerEntity.isPresent()){
+            throw new PlayerAlreadyExistsException(playerToSave.lastName());
+        }
+
+        PlayerEntity playerToRegister = new PlayerEntity(
+                playerToSave.lastName(),
+                playerToSave.firstName(),
+                playerToSave.birthDate(),
+                999999999,
+                playerToSave.points()
+        );
+
+        playerRepository.save(playerToRegister);
+
+        List<PlayerEntity> newRanking = new RankingCalculator(playerRepository.findAll()).getNewPlayersRanking();
+
+        playerRepository.saveAll(newRanking);
+
+        return getByLastName(playerToSave.lastName());
     }
 
     public Player update(PlayerToSave playerToSave) {
-        getByLastName(playerToSave.lastName());
+        Optional<PlayerEntity> playerToUpdate = playerRepository.findOneByLastNameIgnoreCase(playerToSave.lastName());
 
-        List<Player> playersWithoutPlayerToUpdate = PlayerList.All.stream()
-                .filter(player -> !player.lastName().equals(playerToSave.lastName()))
-                .toList();
+        if(playerToUpdate.isEmpty()){
+            throw new PlayerNotFoundException(playerToSave.lastName());
+        }
 
-        return getPlayerNewRanking(playersWithoutPlayerToUpdate, playerToSave);
+        playerToUpdate.get().setFirstName(playerToSave.firstName());
+        playerToUpdate.get().setBirthDate(playerToSave.birthDate());
+
+        if(playerToUpdate.get().getPoints() != playerToSave.points()){
+            playerToUpdate.get().setPoints(playerToSave.points());
+            playerRepository.save(playerToUpdate.get());
+
+            List<PlayerEntity> newRanking = new RankingCalculator(playerRepository.findAll()).getNewPlayersRanking();
+            playerRepository.saveAll(newRanking);
+        }
+        else {
+            playerRepository.save(playerToUpdate.get());
+        }
+
+        return getByLastName(playerToSave.lastName());
     }
 
     public void delete(String lastName) {
-        getByLastName(lastName);
+        Optional<PlayerEntity> playerToDelete = playerRepository.findOneByLastNameIgnoreCase(lastName);
 
-        PlayerList.All = PlayerList.All.stream()
-                .filter(player -> !player.lastName().equals(lastName))
-                .toList();
+        if(playerToDelete.isEmpty()){
+            throw new PlayerNotFoundException(lastName);
+        }
 
-        RankingCalculator rankingCalculator = new RankingCalculator(PlayerList.All);
-        rankingCalculator.getNewPlayersRanking();
-    }
+        playerRepository.delete(playerToDelete.get());
 
-    private Player getPlayerNewRanking(List<Player> existingPlayers, PlayerToSave playerToSave) {
-        RankingCalculator rankingCalculator = new RankingCalculator(existingPlayers, playerToSave);
-        List<Player> players = rankingCalculator.getNewPlayersRanking();
-
-        return players.stream()
-                .filter(player -> player.lastName().equals(playerToSave.lastName()))
-                .findFirst().get();
+        List<PlayerEntity> newRanking = new RankingCalculator(playerRepository.findAll()).getNewPlayersRanking();
+        playerRepository.saveAll(newRanking);
     }
 
 }

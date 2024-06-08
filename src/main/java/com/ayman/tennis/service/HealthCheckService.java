@@ -2,7 +2,7 @@ package com.ayman.tennis.service;
 
 import com.ayman.tennis.ApplicationStatus;
 import com.ayman.tennis.HealthCheck;
-import com.ayman.tennis.repository.HealthCheckRepository;
+import com.ayman.tennis.data.HealthCheckRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

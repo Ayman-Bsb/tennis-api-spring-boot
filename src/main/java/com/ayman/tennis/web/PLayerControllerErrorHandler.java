@@ -1,6 +1,7 @@
 package com.ayman.tennis.web;
 
 import com.ayman.tennis.Error;
+import com.ayman.tennis.service.PlayerAlreadyExistsException;
 import com.ayman.tennis.service.PlayerNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -18,6 +19,12 @@ public class PLayerControllerErrorHandler {
     @ExceptionHandler(PlayerNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     private Error handlePlayerNotFoundException(PlayerNotFoundException ex){
+        return new Error(ex.getMessage());
+    }
+
+    @ExceptionHandler(PlayerAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    private Error handlePlayerAlreadyExistsException(PlayerAlreadyExistsException ex){
         return new Error(ex.getMessage());
     }
 
