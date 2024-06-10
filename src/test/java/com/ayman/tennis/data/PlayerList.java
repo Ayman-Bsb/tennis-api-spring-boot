@@ -1,4 +1,7 @@
-package com.ayman.tennis;
+package com.ayman.tennis.data;
+
+import com.ayman.tennis.Player;
+import com.ayman.tennis.Rank;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -34,5 +37,5 @@ public class PlayerList {
             new Rank(4, 2000)
     );
 
-    public static List<Player> All = Arrays.asList(ANDY_MURRAY, NOVAK_DJOKOVIC, ROGER_FEDERER, RAFAEL_NADAL);
+    public static List<Player> All = Arrays.asList(RAFAEL_NADAL, NOVAK_DJOKOVIC, ROGER_FEDERER, ANDY_MURRAY);
 }
