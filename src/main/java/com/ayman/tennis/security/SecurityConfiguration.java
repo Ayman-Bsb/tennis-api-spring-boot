@@ -3,6 +3,7 @@ package com.ayman.tennis.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -46,6 +47,11 @@ public class SecurityConfiguration {
                                 .requestMatchers("/swagger-ui/**").permitAll()
                                 .requestMatchers("/v3/api-docs/**").permitAll()
                                 .requestMatchers("/accounts/login").permitAll()
+                                .requestMatchers("/healthcheck").permitAll()
+                                .requestMatchers(HttpMethod.GET,"/players/**").hasAnyAuthority("ROLE_USER")
+                                .requestMatchers(HttpMethod.POST, "/players/**").hasAuthority("ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/players/**").hasAuthority("ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/players/**").hasAuthority("ROLE_ADMIN")
                                 .anyRequest().authenticated() // For all other paths, authentication is mandatory.
                 );
 
