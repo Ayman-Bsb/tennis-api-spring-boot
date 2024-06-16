@@ -15,11 +15,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 
+@ActiveProfiles("test")
 // By using the RANDOM_PORT option, the server's listening port becomes random to avoid conflicts during test execution.
 // The port value is accessed through the @LocalServerPort annotation, necessary for sending requests to the server.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
