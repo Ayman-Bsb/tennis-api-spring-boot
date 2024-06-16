@@ -42,6 +42,16 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // Disable CSRF (Cross-Site Request Forgery) protection
+                .headers(headers ->
+                        headers
+                                // To protect against Cross Site Scripting (XSS) attacks.
+                                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self' data:; style-src 'self' 'unsafe-inline';"))
+
+                                // To protect against Clickjacking attacks.
+                                .frameOptions(frameOptionsConfig -> frameOptionsConfig.deny())
+                                // To protect privacy.
+                                .permissionsPolicy(permissionsPolicyConfig -> permissionsPolicyConfig.policy("fullscreen=(self), geolocation=(), microphone=(), camera=()"))
+                )
                 .authorizeHttpRequests(authorizations -> // We define rules that will be applied to various endpoints of our API.
                         authorizations
                                 .requestMatchers("/swagger-ui/**").permitAll()
