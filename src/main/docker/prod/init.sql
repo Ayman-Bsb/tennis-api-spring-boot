@@ -9,26 +9,25 @@ CREATE TABLE player
     birth_date date NOT NULL,
     position integer NOT NULL,
     points integer NOT NULL,
-    PRIMARY KEY(id)
+    PRIMARY KEY (id)
 );
 
 ALTER SEQUENCE player_id_seq OWNED BY player.id;
 
 ALTER TABLE IF EXISTS public.player OWNER to postgres;
 
+INSERT INTO public.player(last_name, first_name, birth_date, position, points) VALUES
+('Djokovic', 'Novak', '1987-05-22', 1, 9855),
+('Alcaraz', 'Carlos', '2003-05-05', 2, 8805),
+('Jannik', 'Sinner', '2001-08-16', 3, 8270),
+('Daniil', 'Medvedev', '1996-02-11', 4, 8015),
+('Andrey', 'Rublev', '1997-10-20', 5, 5110),
+('Alexander', 'Zverev', '1997-04-20', 6, 5085),
+('Holger', 'Rune', '2003-04-29', 7, 3700),
+('Hubert', 'Hurkacz', '1997-02-11', 8, 3395),
+('Alex', 'de Minaur', '1999-02-17', 9, 3210),
+('Taylor', 'Fritz', '1997-10-28', 10, 3150);
 
-INSERT INTO public.player(last_name, first_name, birth_date, position, points)
-        VALUES ('Nadal', 'Rafael', '1986-06-03', 1, 5000);
-
-INSERT INTO public.player(last_name, first_name, birth_date, position, points)
-    	VALUES ('Djokovic', 'Novak', '1987-05-22', 2, 4000);
-
-INSERT INTO public.player(last_name, first_name, birth_date, position, points)
-    	VALUES ('Federer', 'Roger', '1981-08-08', 3, 3000);
-
-INSERT INTO public.player(last_name, first_name, birth_date, position, points)
-    	VALUES ('Murray', 'Andy', '1987-05-15', 4, 2000);
-    	
 -- User
 CREATE SEQUENCE user_id_seq;
 
@@ -45,10 +44,9 @@ ALTER SEQUENCE user_id_seq OWNED BY app_user.id;
 
 ALTER TABLE IF EXISTS public.app_user OWNER to postgres;
 
-INSERT INTO public.app_user(login, password, last_name, first_name)
-	VALUES
-	('admin', '$2a$12$RkcdJn2kLrAS9fmvDv/CWehqID8nB3XBWXOtazhQ2PY1ZFwDB3L76', 'app', 'Admin'),
-	('user', '$2a$12$VRnUGZfeEsWHG9jb7NyvQuhpISK65N2LtWyqXAi5t1CBWIQ34uRNa', 'Doe', 'John');
+INSERT INTO public.app_user(login, password, last_name, first_name) VALUES
+('admin', '$2a$12$VLMmCnWg6g1ZWfctUUYpWeyfArfbPzlq1EC1hi5BPSQeJWMwjmpdy', 'app', 'Admin'),
+('visitor', '$2a$12$ACcMbD/j30wmsucWNZpMaeJaO2w0tBIswOzDMOjZhVvEp6RzPhgWS', 'Doe', 'John');
 
 -- Role
 CREATE TABLE app_role
@@ -57,10 +55,9 @@ CREATE TABLE app_role
     PRIMARY KEY (name)
 );
 
-INSERT INTO public.app_role(name)
-	VALUES
-	('ROLE_ADMIN'),
-	('ROLE_USER');
+INSERT INTO public.app_role(name) VALUES
+('ROLE_ADMIN'),
+('ROLE_USER');
 
 ALTER TABLE IF EXISTS public.app_role OWNER to postgres;
 
@@ -78,8 +75,7 @@ CREATE TABLE app_user_role
 
 ALTER TABLE IF EXISTS public.app_user_role OWNER to postgres;
 
-INSERT INTO public.app_user_role(user_id, role_name)
-	VALUES
-	(1, 'ROLE_ADMIN'),
-	(1, 'ROLE_USER'),
-	(2, 'ROLE_USER');
+INSERT INTO public.app_user_role(user_id, role_name) VALUES
+(1, 'ROLE_ADMIN'),
+(1, 'ROLE_USER'),
+(2, 'ROLE_USER');
